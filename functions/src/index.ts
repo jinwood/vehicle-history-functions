@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
+import * as functions from "firebase-functions";
 import { UserRecord } from "firebase-functions/v1/auth";
-const functions = require("firebase-functions");
+// const functions = require("firebase-functions");
 
 admin.initializeApp();
 
@@ -24,3 +25,26 @@ exports.createUser = functions.auth
         console.error(err);
       });
   });
+
+exports.createVehicle = functions.firestore
+  .document("vehicles/{vehicleId}")
+  .onCreate(
+    async (
+      snap: functions.firestore.QueryDocumentSnapshot,
+      context: functions.EventContext
+    ) => {
+      const data = snap.data();
+      const vehicleId = context.params.vehicleId;
+      const vehicle = {
+        ...data,
+        vehicleId,
+      };
+      return db
+        .collection("vehicles")
+        .doc(vehicleId)
+        .set(vehicle)
+        .catch((err: Error) => {
+          console.error(err);
+        });
+    }
+  );
