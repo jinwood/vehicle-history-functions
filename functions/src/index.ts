@@ -35,9 +35,12 @@ exports.createVehicle = functions.firestore
     ) => {
       const data = snap.data();
       const vehicleId = context.params.vehicleId;
+      const uid = context.auth?.uid;
       const vehicle = {
         ...data,
+        uid,
         vehicleId,
+        dateCreated: admin.firestore.Timestamp.now(),
       };
       return db
         .collection("vehicles")
